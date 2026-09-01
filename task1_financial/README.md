@@ -1,5 +1,7 @@
 # Task 1, Financial AI
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Dinojan9901/llm-financial-research-agents/blob/main/task1_financial/notebook.ipynb)
+
 LLM-powered equity research assistant.
 
 ## Notebook

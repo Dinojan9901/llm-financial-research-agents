@@ -1,5 +1,7 @@
 # Task 3, Agentic Workflows
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Dinojan9901/llm-financial-research-agents/blob/main/task3_agentic/notebook.ipynb)
+
 Multi-agent financial research system.
 
 ## Query the system answers

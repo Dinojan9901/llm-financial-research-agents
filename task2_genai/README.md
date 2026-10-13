@@ -83,10 +83,75 @@ Examples are stored as a `messages` list rather than a pre-rendered string. The 
 template belongs to the tokenizer, so rendering it into the file would bake one model's
 special tokens into the dataset.
 
+## Training
+
+QLoRA on a Colab T4: Phi-3-mini loaded in 4-bit NF4 with double quantisation, with
+25.2M trainable LoRA parameters. An initial 3-epoch run overfit (validation loss rose at
+epoch 3 while training loss kept falling), so the final run uses 2 epochs. It took 6.2
+minutes and peaked at 11.89 GB of GPU memory. Every hyperparameter is justified in the
+notebook.
+
+| Epoch | Train loss | Val loss |
+|---|---|---|
+| 1 | 0.7836 | 0.6284 |
+| 2 | 0.5728 | 0.6098 |
+
+Validation loss fell from 0.628 to 0.610. The adapters were then merged into a freshly
+loaded fp16 base, so the published model needs no PEFT dependency.
+
+## Results
+
+Both models were scored on the same 12 held-out test examples with the same decoding
+settings. The base model gets a longer system prompt containing the full category
+definitions, so the comparison is not against a strawman.
+
+| Metric | Base | Fine-tuned |
+|---|---|---|
+| ROUGE-1 | 0.5359 | 0.6383 |
+| ROUGE-2 | 0.2808 | 0.3716 |
+| ROUGE-L | 0.3588 | 0.4710 |
+| BERTScore F1, baseline-rescaled | 0.0334 | 0.5516 |
+| Parses as JSON | 6/12 | 12/12 |
+| Validates against the schema | 1/12 | 12/12 |
+| Categories outside the taxonomy | 2 | 0 |
+
+LLM-as-judge, scored 1 to 5 by `openai/gpt-oss-120b` on Groq. The judge sees the passage,
+the reference and the candidate, but not which model produced the candidate.
+
+| Model | Coverage | Precision | Category accuracy | Format | Overall |
+|---|---|---|---|---|---|
+| Base | 2.75 | 3.25 | 2.17 | 3.00 | 2.17 |
+| Fine-tuned | 4.00 | 4.25 | 3.50 | 5.00 | 3.42 |
+
+Hallucination rate of the fine-tuned model, from the judge's verdict on each response:
+2 correct, 7 partially correct, 3 hallucinated, so **3/12 (25%)**. Every case is printed
+in full in the notebook so the labels can be checked by hand.
+
+**How far these numbers go.** The test set is 12 examples. One response changing label
+moves the hallucination rate by 8.3 points, and no confidence intervals are reported.
+The test passages and their reference extractions come from the same synthetic teacher
+as the training data, so the scores measure agreement with that teacher rather than
+with human-annotated filings. Read together, the results show that fine-tuning fixed the
+output format reliably (12/12 valid against 1/12) but did not fix semantic accuracy:
+category confusion is the weakest dimension, and a quarter of responses contain a risk
+the passage does not support.
+
+### RAG fallback
+
+When the fine-tuned model's perplexity over its own output is high, the passage is
+re-queried with the two most similar training examples retrieved from a ChromaDB store
+(96 passages, `all-MiniLM-L6-v2` embeddings). The notebook shows this on the
+highest-perplexity test case. It is a demonstration, not an evaluated component: the
+threshold of 3.0 sits below every observed test perplexity (4.15 to 8.33), so as
+configured it would fire on every input, and in the case shown the retrieval-augmented
+output added a concentration-risk entry that the reference does not contain.
+
+## Model
+
+Merged model on Hugging Face:
+[Dino21/financial-risk-extractor-phi3-qlora](https://huggingface.co/Dino21/financial-risk-extractor-phi3-qlora)
+
 ## Runs on Colab
 
-Fine-tuning needs a CUDA GPU. See [../docs/SETUP.md](../docs/SETUP.md).
-
-## Model link
-
-Hugging Face: TODO after training.
+Fine-tuning needs a CUDA GPU. See [../docs/SETUP.md](../docs/SETUP.md) and
+[../docs/TASK2_COLAB.md](../docs/TASK2_COLAB.md).

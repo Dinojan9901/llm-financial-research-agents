@@ -52,7 +52,7 @@ Full instructions, including the Colab path for Task 2, are in [docs/SETUP.md](d
 
 Inference runs on Groq (`openai/gpt-oss-120b`) with OpenRouter as a fallback provider. `common/llm.py` tries Groq first and moves to OpenRouter only when Groq raises, which keeps the multi-agent runs in Task 3 from dying on a single rate-limit response.
 
-Task 2 uses Groq GPT-OSS-120B as the **teacher** model for synthetic data generation and fine-tunes a **different, smaller student** model.
+Task 2 uses a large **teacher** model for synthetic data generation and fine-tunes a **different, smaller student** model. The teacher was planned as Groq GPT-OSS-120B; Groq's daily token cap was exhausted when generation ran, so the client failed over and MiniMax-M3 via OpenRouter produced all 120 examples. See [task2_genai/README.md](task2_genai/README.md).
 
 ## Secrets
 

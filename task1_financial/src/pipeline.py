@@ -62,7 +62,7 @@ def run(ticker: str, years: int = 2, n_headlines: int = 10, skip_llm: bool = Fal
                                 output_dir=output_dir)
 
     payload = {"summary": summary, "analysis": result,
-               "headlines": headlines, "outputs": {k: str(v) for k, v in paths.items()}}
+               "headlines": headlines, "outputs": {k: config.repo_relative(v) for k, v in paths.items()}}
     json_path = Path(paths["markdown"]).with_name(f"{ticker}_analysis.json")
     json_path.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
     paths["json"] = json_path

@@ -143,7 +143,7 @@ def main(argv=None) -> int:
     print(tracer.render())
     print("\n--- summary ---")
     print(json.dumps(tracer.summary(), indent=2))
-    print(f"\ntrace file: {tracer.path}")
+    print(f"\ntrace file: {config.repo_relative(tracer.path)}")
     return 0
 
 

@@ -400,7 +400,7 @@ TICKER = "NVDA"
 
 tracer = tracing.ToolTracer(config.TASK3_LOG_DIR / "agent_trace.jsonl", append=False)
 toolkit.set_tracer(tracer)
-print("tracing to:", tracer.path)
+print("tracing to:", config.repo_relative(tracer.path))
 print("session id:", tracer.session_id)
 """),
         md("""

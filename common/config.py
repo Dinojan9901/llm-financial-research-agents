@@ -32,6 +32,15 @@ for _d in (TASK1_OUTPUT_DIR, TASK3_LOG_DIR, TASK3_CACHE_DIR):
     _d.mkdir(parents=True, exist_ok=True)
 
 
+def repo_relative(path) -> str:
+    """Path relative to the repo root, so committed outputs do not leak a local path."""
+    path = Path(path).resolve()
+    try:
+        return path.relative_to(REPO_ROOT).as_posix()
+    except ValueError:
+        return str(path)
+
+
 def available_providers() -> list[str]:
     providers = []
     if GROQ_API_KEY:

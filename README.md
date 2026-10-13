@@ -5,8 +5,32 @@ Three LLM systems for financial research: an equity research assistant that reas
 | Task | Domain | Deliverable | Folder | Notebook |
 |---|---|---|---|---|
 | 1 | Financial AI | LLM-powered equity research assistant | [task1_financial/](task1_financial/) | [notebook](task1_financial/notebook.ipynb) |
-| 2 | Generative AI | QLoRA fine-tuning, financial risk clause extraction | [task2_genai/](task2_genai/) | in progress |
+| 2 | Generative AI | QLoRA fine-tuning, financial risk clause extraction | [task2_genai/](task2_genai/) | [notebook](task2_genai/notebook.ipynb) |
 | 3 | Agentic Workflows | Multi-agent research system with memory and tracing | [task3_agentic/](task3_agentic/) | [notebook](task3_agentic/notebook.ipynb) |
+
+## Task 2 results
+
+Phi-3-mini fine-tuned with QLoRA to extract risk factors as JSON from a closed
+twelve-category taxonomy, compared against the untuned base model on the same 12 held-out
+examples. Validation loss fell from 0.628 to 0.610 over two epochs.
+
+| Metric | Base | Fine-tuned |
+|---|---|---|
+| ROUGE-1 | 0.5359 | 0.6383 |
+| ROUGE-2 | 0.2808 | 0.3716 |
+| ROUGE-L | 0.3588 | 0.4710 |
+| BERTScore F1, baseline-rescaled | 0.0334 | 0.5516 |
+| Valid JSON, valid against schema | 6/12, 1/12 | 12/12, 12/12 |
+| Categories outside the taxonomy | 2 | 0 |
+| LLM judge overall, 1 to 5 | 2.17 | 3.42 |
+| LLM judge category accuracy, 1 to 5 | 2.17 | 3.50 |
+| Hallucinated responses | not measured | 3/12 |
+
+The test set is small: 12 synthetic examples, so one response changing moves the
+hallucination rate by 8.3 points. Fine-tuning reliably fixed the output format, but not
+semantic accuracy. Full results and caveats are in [task2_genai/README.md](task2_genai/README.md).
+
+Model: [Dino21/financial-risk-extractor-phi3-qlora](https://huggingface.co/Dino21/financial-risk-extractor-phi3-qlora)
 
 ## Tests
 

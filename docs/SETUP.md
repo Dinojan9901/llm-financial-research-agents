@@ -45,14 +45,14 @@ git check-ignore -v .env
 python -c "from common.llm import get_client; print(get_client().chat('You are terse.', 'Reply with OK'))"
 ```
 
-## Machine notes
+## Low-memory machines
 
-This laptop is an Intel Celeron N4120, 4 cores, 7.82 GB RAM, Intel UHD 600 with no CUDA.
+Tasks 1 and 3 were developed on a 4-core laptop with 8 GB of RAM and no CUDA GPU, so modest hardware is enough.
 
-- Close spare browser tabs before running notebooks. Free RAM measured 0.5 GB at setup time and pandas plus yfinance want roughly 400 to 700 MB.
-- Commit charge sat at 18.08 GB against a 21.35 GB limit. If Python dies with a MemoryError or Windows warns that virtual memory is low, raise the pagefile: System Properties, Advanced, Performance Settings, Advanced, Virtual Memory, Change. Set a system-managed size on a drive with free space.
-- The virtual environment lives on E:, which has more headroom than C:.
-- Do not `pip install torch` locally. It is a multi-gigabyte download with no CUDA runtime to use it.
+- Close spare browser tabs before running the notebooks. pandas plus yfinance want roughly 400 to 700 MB of free RAM.
+- If Python dies with a MemoryError or Windows warns that virtual memory is low, raise the pagefile: System Properties, Advanced, Performance Settings, Advanced, Virtual Memory, Change. Set a system-managed size on a drive with free space.
+- Put the virtual environment on whichever drive has the most free space.
+- Do not `pip install torch` locally for Tasks 1 and 3. It is a multi-gigabyte download, and without CUDA it cannot run Task 2 anyway.
 
 ## Task 2 on Google Colab
 

@@ -29,8 +29,9 @@ Phase 0 has no dependency on any code. Start it now.
 2. API Keys, then Create API Key. Copy it once, it is not shown again.
 3. Paste into `.env` as `GROQ_API_KEY=`.
 
-Free tier is rate limited per minute, not meaningfully per day at this volume. Building
-120 examples costs a few hundred thousand tokens in total.
+The free tier is rate limited per minute and capped at 200,000 tokens per day. Building
+120 examples costs a few hundred thousand tokens in total, which exceeded the daily cap
+in practice. Add an `OPENROUTER_API_KEY` too, so the client can fail over when Groq runs out.
 
 ### Hugging Face, required for the model deliverable
 
@@ -72,7 +73,7 @@ hf_token = userdata.get("HF_TOKEN")
 
 | | Choice | Why |
 |---|---|---|
-| Teacher | Groq `openai/gpt-oss-120b` | Free, strong at structured extraction |
+| Teacher | `minimax/minimax-m3:free` via OpenRouter | Planned as Groq `openai/gpt-oss-120b`, but Groq's daily cap ran out mid-generation and the client failed over; MiniMax-M3 produced all 120 examples |
 | Student | `microsoft/Phi-3-mini-4k-instruct` | 3.8B fits a T4 comfortably under 4-bit, ungated so no licence wait, and a different model family from the teacher |
 
 `Qwen/Qwen2.5-3B-Instruct` is an equally good ungated fallback. Avoid Llama and Mistral

@@ -1,4 +1,4 @@
-"""Generate the task notebooks.
+"""Generate the research pipeline and agents notebooks.
 
 The notebooks are built from here rather than hand-edited so their structure stays in
 step with the modules they demonstrate. Run this, then execute the notebooks to capture
@@ -65,12 +65,12 @@ def badge(path):
             f"blob/main/{path})")
 
 
-def task1():
+def research_pipeline_nb():
     cells = [
         md(f"""
-# Task 1, Financial AI: LLM-Powered Equity Research Assistant
+# Research Pipeline: LLM-Powered Equity Research Assistant
 
-{badge('task1_financial/notebook.ipynb')}
+{badge('research_pipeline/notebook.ipynb')}
 
 Fetches real market data, computes five technical indicators from first principles with
 no TA-Lib, retrieves news, and uses an LLM to produce validated sentiment and a reasoned
@@ -87,7 +87,7 @@ Buy, Hold or Sell call.
         md("## Setup\n\nRuns unchanged locally or on Colab."),
         code(BOOTSTRAP),
         md("""
-# Task 1A, Data Pipeline
+# Data Pipeline
 
 ## Fetching OHLCV
 
@@ -102,7 +102,7 @@ an unadjusted series would corrupt every moving average across the split.
 import logging
 logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(name)s: %(message)s")
 
-from task1_financial.src import data, indicators as ind, news, summary as summary_mod
+from research_pipeline.src import data, indicators as ind, news, summary as summary_mod
 
 TICKER = "NVDA"
 
@@ -143,7 +143,7 @@ library. Nineteen reference RSI values are checked to within 0.02, which proves 
 implementation independently of any TA package.
 """),
         code("""
-from task1_financial.tests import test_indicators
+from research_pipeline.tests import test_indicators
 test_indicators.main()
 """),
         md("""
@@ -196,17 +196,17 @@ for bad in ["ZZZZNOTREAL", "", "   "]:
 print(f"{'news(bad)':14s} -> returned {len(news.fetch_news('ZZZZNOTREAL', n=5))} headlines, no exception")
 """),
         md("""
-# Task 1B, LLM Sentiment and Signal Reasoning
+# LLM Sentiment and Signal Reasoning
 
 ## Prompts are constants, not inline strings
 
-Prompts live in `task1_financial/src/prompts.py`, separated from the pipeline logic. The
+Prompts live in `research_pipeline/src/prompts.py`, separated from the pipeline logic. The
 system prompt carries **no per-request data**: the ticker and price appear only in the
 user turn, so the role definition does not change per call. A test asserts this
 mechanically rather than by eye.
 """),
         code("""
-from task1_financial.src import prompts
+from research_pipeline.src import prompts
 print("=== SENTIMENT SYSTEM PROMPT ===")
 print(prompts.SENTIMENT_SYSTEM)
 print()
@@ -222,7 +222,7 @@ the headline is **excluded** from the aggregate rather than defaulted to neutral
 would drag the score toward zero and hide the problem.
 """),
         code("""
-from task1_financial.src import analysis
+from research_pipeline.src import analysis
 
 outcome = analysis.analyse_headlines(headlines, TICKER, "NVIDIA Corporation")
 
@@ -314,7 +314,7 @@ a dual-axis overlay, because price and RSI on two y-scales would let a reader in
 crossings that are purely a scaling artefact.
 """),
         code("""
-from task1_financial.src import report
+from research_pipeline.src import report
 from IPython.display import Image, Markdown, display
 
 result = {
@@ -342,7 +342,7 @@ display(Markdown(paths["markdown"].read_text(encoding="utf-8")))
 All tests run offline with no API key and no network access.
 """),
         code("""
-from task1_financial.tests import test_news, test_analysis, test_report
+from research_pipeline.tests import test_news, test_analysis, test_report
 for mod in (test_indicators, test_news, test_analysis, test_report):
     print(f"--- {mod.__name__.split('.')[-1]} ---")
     mod.main()
@@ -368,12 +368,12 @@ for mod in (test_indicators, test_news, test_analysis, test_report):
     return cells
 
 
-def task3():
+def research_agents_nb():
     cells = [
         md(f"""
-# Task 3, Agentic Workflows: Multi-Agent Financial Research System
+# Research Agents: Multi-Agent Financial Research System
 
-{badge('task3_agentic/notebook.ipynb')}
+{badge('research_agents/notebook.ipynb')}
 
 > Analyse the current financial health and market sentiment of [TICKER]. Identify the top
 > three risks to its share price over the next 90 days and suggest one data-driven hedge
@@ -392,24 +392,24 @@ import json, logging
 logging.basicConfig(level=logging.ERROR)
 
 from common import config
-from task3_agentic.src import agent as agent_mod
-from task3_agentic.src import multi_agent, tools as toolkit, trace as tracing
-from task3_agentic.src.memory import BriefCache
+from research_agents.src import agent as agent_mod
+from research_agents.src import multi_agent, tools as toolkit, trace as tracing
+from research_agents.src.memory import BriefCache
 
 TICKER = "NVDA"
 
-tracer = tracing.ToolTracer(config.TASK3_LOG_DIR / "agent_trace.jsonl", append=False)
+tracer = tracing.ToolTracer(config.AGENTS_LOG_DIR / "agent_trace.jsonl", append=False)
 toolkit.set_tracer(tracer)
 print("tracing to:", config.repo_relative(tracer.path))
 print("session id:", tracer.session_id)
 """),
         md("""
-# Task 3A, Tool-Using Research Agent
+# Tool-Using Research Agent
 
 ## The five tools
 
-Price and news logic is imported from `task1_financial/src` rather than reimplemented, so
-the agent and the Task 1 brief cannot disagree about the same ticker.
+Price and news logic is imported from `research_pipeline/src` rather than reimplemented, so
+the agent and the research pipeline's brief cannot disagree about the same ticker.
 
 Tools **never raise into the agent loop**. A failure returns `{"ok": false, "error": ...}`
 so the model observes it and can route around it. An exception would end the run instead of
@@ -507,7 +507,7 @@ else:
     print("synthesis failed:", run.report_error)
 """),
         md("""
-# Task 3C, Short-Term Memory
+# Short-Term Memory
 
 A follow-up whose answer the session already holds should cost **zero** new tool calls.
 The trace is the proof: if the agent re-fetched, a new row would appear.
@@ -528,7 +528,7 @@ print("PASS: answered from session context" if new_calls == 0
       else "the agent chose to re-fetch")
 """),
         md("""
-# Task 3C, Persistent Memory
+# Persistent Memory
 
 The brief is cached by ticker **and date**. The date is part of the key deliberately:
 yesterday's brief is stale by definition, so it must not satisfy today's request.
@@ -536,7 +536,7 @@ yesterday's brief is stale by definition, so it must not satisfy today's request
         code("""
 from datetime import date
 
-cache = BriefCache(config.TASK3_CACHE_DIR)
+cache = BriefCache(config.AGENTS_CACHE_DIR)
 cache.clear(TICKER)
 print("cold lookup    :", "HIT" if cache.load(TICKER) else "MISS (expected)")
 
@@ -550,7 +550,7 @@ print("stale date key :", "HIT" if cache.load(TICKER, "2020-01-01") else "MISS (
 print("files          :", cache.list_cached())
 """),
         md("""
-# Task 3B, Two-Agent Coordination
+# Two-Agent Coordination
 
 Tool restriction is **structural, not prompted**. Each agent is constructed with its own
 tool list and looks tools up by name within it, so Agent B holds no reference by which it
@@ -613,7 +613,7 @@ if result.errors:
 print(f"pipeline elapsed: {result.elapsed_s:.1f}s")
 """),
         md("""
-# Task 3C, Observability
+# Observability
 
 Every tool call is appended to `logs/agent_trace.jsonl` with the tool name, its inputs,
 the output truncated to 200 characters, wall-clock duration, and which agent made the
@@ -649,7 +649,7 @@ recovery, context budgeting and the deterministic handoff. All run offline again
 scripted fake LLM, with no API key and no network.
 """),
         code("""
-from task3_agentic.tests import test_agentic
+from research_agents.tests import test_agentic
 test_agentic.main()
 """),
         md("""
@@ -657,7 +657,7 @@ test_agentic.main()
 
 | Component | Where |
 |---|---|
-| All five tools implemented | `src/tools.py`, reusing the Task 1 pipeline |
+| All five tools implemented | `src/tools.py`, reusing the research pipeline |
 | Autonomous tool selection | order chosen by the model, nothing hardcoded |
 | Observe and replan cycle | printed per step above |
 | Final report quality | three sections, Pydantic-validated |
@@ -689,5 +689,5 @@ def build(cells, path: Path, title: str):
 
 
 if __name__ == "__main__":
-    build(task1(), REPO / "task1_financial" / "notebook.ipynb", "Task 1 Financial AI")
-    build(task3(), REPO / "task3_agentic" / "notebook.ipynb", "Task 3 Agentic Workflows")
+    build(research_pipeline_nb(), REPO / "research_pipeline" / "notebook.ipynb", "Research Pipeline")
+    build(research_agents_nb(), REPO / "research_agents" / "notebook.ipynb", "Research Agents")

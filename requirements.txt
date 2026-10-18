@@ -1,4 +1,4 @@
-# Local environment for Task 1 and Task 3. Task 2 runs on Colab, see task2_genai/requirements-colab.txt
+# Local environment for the research pipeline and agents. The risk extractor runs on Colab, see risk_extractor/requirements-colab.txt
 
 pandas>=2.0,<3.0
 numpy>=1.24,<2.1

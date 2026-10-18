@@ -2,33 +2,33 @@
 
 ## Architectural decisions
 
-**Keep numbers out of the model.** The recurring decision across all three tasks was to
-compute figures in code and ask the LLM only to reason about them. Task 1's momentum
+**Keep numbers out of the model.** The recurring decision across all three components was to
+compute figures in code and ask the LLM only to reason about them. The research pipeline's momentum
 signal is a deterministic four-component rule, so a sampling failure cannot silently
-change a number in the report. Task 3's agent handoff parses figures from tool payloads
+change a number in the report. The agents' handoff parses figures from tool payloads
 in Python. I learned that one the hard way: my first version asked the model to transcribe
 them and it returned an entirely null brief that validated cleanly and told the receiving
 agent nothing.
 
-**Enforce constraints structurally, not by prompt.** Task 3B restricts each agent's tools
+**Enforce constraints structurally, not by prompt.** The two-agent pipeline restricts each agent's tools
 by constructing it with its own tool list, so Agent B holds no reference by which it could
 reach a price tool. A test asserts that requesting a forbidden tool returns `unknown tool`
 rather than data. A prompt saying "do not use web search" is a request; this is a
 guarantee.
 
-**Share the pipeline across tasks.** Task 3's tools import Task 1's indicators and news
+**Share the pipeline across components.** The agents' tools import the research pipeline's indicators and news
 code rather than reimplementing them, so the agent and the research brief cannot disagree
 about the same ticker.
 
 **Validate every model output.** Pydantic schemas with a self-repair pass sit on every
 LLM call. This looked like overhead until it repeatedly saved runs: Groq once emitted
 `"confidence": 0. nine`, the fallback provider returned a differently shaped payload, and
-the Task 2C judge kept omitting a required field. All three recovered automatically.
+the evaluation judge kept omitting a required field. All three recovered automatically.
 
 ## What I would improve with more time
 
 **A larger test set.** With twelve held-out examples, one response changing category moves
-the hallucination rate by 8.3 points. Every Task 2C number carries wide confidence
+the hallucination rate by 8.3 points. Every evaluation number carries wide confidence
 intervals, and that is the first thing I would fix.
 
 **Balance the training data by category.** `concentration_risk` appears 40 times against
@@ -44,7 +44,7 @@ the largest consumer of the token budget.
 
 ## Limitations encountered
 
-**No local GPU.** An Intel Celeron with 8 GB RAM and no CUDA meant Task 2 could only run on
+**No local GPU.** An Intel Celeron with 8 GB RAM and no CUDA meant fine-tuning could only run on
 Colab, which shaped the plan: dataset generation locally against an API, training remotely.
 
 **Free-tier token limits changed the design.** Groq's 200,000 daily and 8,000 per-minute

@@ -1,8 +1,8 @@
 # Setup
 
-## Local environment (Task 1 and Task 3)
+## Local environment (research pipeline and agents)
 
-Tasks 1 and 3 are network-bound and run comfortably on a modest machine. Task 2 does not run locally, see the Colab section below.
+The research pipeline and agents are network-bound and run comfortably on a modest machine. The risk extractor does not run locally, see the Colab section below.
 
 ```powershell
 git clone https://github.com/Dinojan9901/llm-financial-research-agents.git
@@ -30,8 +30,8 @@ notepad .env
 |---|---|---|
 | `GROQ_API_KEY` | yes | https://console.groq.com/keys, free, no card |
 | `OPENROUTER_API_KEY` | optional | https://openrouter.ai/keys, used only as fallback |
-| `HF_TOKEN` | Task 2 only | https://huggingface.co/settings/tokens, needs write scope to push the model |
-| `WANDB_API_KEY` | Task 2 only | https://wandb.ai/authorize, optional if logging manually |
+| `HF_TOKEN` | Risk extractor only | https://huggingface.co/settings/tokens, needs write scope to push the model |
+| `WANDB_API_KEY` | Risk extractor only | https://wandb.ai/authorize, optional if logging manually |
 
 `.env` is gitignored. Confirm before any push:
 
@@ -47,18 +47,18 @@ python -c "from common.llm import get_client; print(get_client().chat('You are t
 
 ## Low-memory machines
 
-Tasks 1 and 3 were developed on a 4-core laptop with 8 GB of RAM and no CUDA GPU, so modest hardware is enough.
+The research pipeline and agents were developed on a 4-core laptop with 8 GB of RAM and no CUDA GPU, so modest hardware is enough.
 
 - Close spare browser tabs before running the notebooks. pandas plus yfinance want roughly 400 to 700 MB of free RAM.
 - If Python dies with a MemoryError or Windows warns that virtual memory is low, raise the pagefile: System Properties, Advanced, Performance Settings, Advanced, Virtual Memory, Change. Set a system-managed size on a drive with free space.
 - Put the virtual environment on whichever drive has the most free space.
-- Do not `pip install torch` locally for Tasks 1 and 3. It is a multi-gigabyte download, and without CUDA it cannot run Task 2 anyway.
+- Do not `pip install torch` locally for the research pipeline and agents. It is a multi-gigabyte download, and without CUDA it cannot run the fine-tune anyway.
 
-## Task 2 on Google Colab
+## Risk extractor on Google Colab
 
-Fine-tuning requires a CUDA GPU, so Task 2 runs entirely on Colab free tier.
+Fine-tuning requires a CUDA GPU, so the risk extractor runs entirely on Colab free tier.
 
-1. Open `task2_genai/notebook.ipynb` in Colab.
+1. Open `risk_extractor/notebook.ipynb` in Colab.
 2. Runtime, Change runtime type, T4 GPU.
 3. Store `HF_TOKEN` and `GROQ_API_KEY` in Colab Secrets (the key icon in the left sidebar), never inline in a cell.
 4. Run all cells and leave the outputs in place before downloading the notebook back into this repo.

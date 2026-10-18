@@ -24,11 +24,11 @@ OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
 DEFAULT_TICKER = _get("DEFAULT_TICKER", "NVDA")
 
-TASK1_OUTPUT_DIR = REPO_ROOT / "task1_financial" / "outputs"
-TASK3_LOG_DIR = REPO_ROOT / "task3_agentic" / "logs"
-TASK3_CACHE_DIR = REPO_ROOT / "task3_agentic" / "cache"
+PIPELINE_OUTPUT_DIR = REPO_ROOT / "research_pipeline" / "outputs"
+AGENTS_LOG_DIR = REPO_ROOT / "research_agents" / "logs"
+AGENTS_CACHE_DIR = REPO_ROOT / "research_agents" / "cache"
 
-for _d in (TASK1_OUTPUT_DIR, TASK3_LOG_DIR, TASK3_CACHE_DIR):
+for _d in (PIPELINE_OUTPUT_DIR, AGENTS_LOG_DIR, AGENTS_CACHE_DIR):
     _d.mkdir(parents=True, exist_ok=True)
 
 
